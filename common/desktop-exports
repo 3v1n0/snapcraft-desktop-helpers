@@ -98,6 +98,15 @@ fi
 # Create $XDG_RUNTIME_DIR if not exists (to be removed when LP: #1656340 is fixed)
 [ -n "$XDG_RUNTIME_DIR" ] && mkdir -p $XDG_RUNTIME_DIR -m 700
 
+# Set XCOMPOSEFILE to a Compose file we create to include data from snap
+if [ -z "$QTCOMPOSE"] && ([-z "$XCOMPOSEFILE" ] || ! head -c0 "$XCOMPOSEFILE" &> /dev/null); then
+  export XCOMPOSEFILE=$XDG_DATA_HOME/X11/Compose
+
+  if [ ! -e "$XCOMPOSEFILE" ]; then
+    echo "include \"$SNAP/usr/share/X11/locale/%L/Compose\"" > "$XCOMPOSEFILE"
+  fi
+fi
+
 # If detect wayland server socket, then set environment so applications prefer
 # wayland, and setup compat symlink (until we use user mounts. Remember,
 # XDG_RUNTIME_DIR is /run/user/<uid>/snap.$SNAP so look in the parent directory
